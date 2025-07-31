@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Recibos - Flor de Liz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variáveis CSS para as cores da logo Flor de Liz (aplicadas ao recibo) */
+        :root {
+            /* Cores extraídas da logomarca "Flor de Liz" */
+            --logo-vermelho: #E44D26; /* Vermelho vibrante */
+            --logo-amarelo: #F7DA21; /* Amarelo vibrante */
+            --logo-azul: #0000FF;    /* Azul no centro da flor */
+            --logo-preto: #000000;   /* Cor do texto "Flor de Lis" na logo */
+            --logo-cinza: #666666;   /* Cor do subtítulo "Escola de Educação Básica" */
+
+            /* Cores do Template do Recibo - AGORA BASEADAS NA LOGO DA FLOR DE LIZ */
+            --template-main-color: var(--logo-vermelho); /* Cor principal forte */
+            --template-light-accent: var(--logo-amarelo); /* Cor de destaque/faixas claras */
+            --template-dark-text: var(--logo-preto);      /* Texto principal escuro */
+            --template-secondary-text: var(--logo-cinza);  /* Texto secundário */
+            --template-table-stripe: rgba(247, 218, 33, 0.1); /* Amarelo claro para linhas de tabela (10% opacidade) */
+            --template-white: #FFFFFF;
+            --template-border-color: #E0E0E0; /* Borda mais suave */
+
+            /* Cores do Sistema (Formulário/Histórico) - NOVO PALETA PROFISSIONAL */
+            --cor-fundo-claro-sistema: #F0F2F5; /* Cinza muito claro, quase branco */
+            --cor-fundo-card-sistema: #FFFFFF;
+            --cor-texto-principal-sistema: #34495E; /* Azul escuro quase preto */
+            --cor-texto-secundario-sistema: #7F8C8D; /* Cinza médio */
+            --cor-borda-sistema: #DCDDE1; /* Cinza claro para bordas */
+            --cor-sombra-sistema: rgba(0, 0, 0, 0.06);
+            --cor-sombra-hover-sistema: rgba(0, 0, 0, 0.12);
+
+            /* Cores de Ação (botões, destaques) - Usando as cores da logo Flor de Liz para acentuar */
+            --cor-primaria-acao: var(--logo-azul); /* Azul para botões principais */
+            --cor-secundaria-acao: var(--logo-vermelho); /* Vermelho para botões secundários/perigo */
+            --cor-texto-botao: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--cor-fundo-claro-sistema);
+            color: var(--cor-texto-principal-sistema);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Suaviza fontes em navegadores WebKit */
+            -moz-osx-font-smoothing: grayscale; /* Suaviza fontes em navegadores Mozilla */
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--cor-fundo-card-sistema);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px var(--cor-sombra-sistema);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--cor-borda-sistema); /* Adicionado borda suave */
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 20px var(--cor-sombra-hover-sistema);
+            transform: translateY(-3px); /* Efeito sutil de levantar */
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            grid-column: 1 / -1;
+        }
+
+        h1 {
+            color: var(--cor-texto-principal-sistema); /* Trocado para cor principal do sistema */
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8em; /* Levemente maior */
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--cor-texto-principal-sistema);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        h3 {
+            color: var(--cor-primaria-acao); /* Usando a cor primária de ação (azul da logo) */
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2em; /* Um pouco maior */
+            margin-bottom: 25px; /* Mais espaçamento */
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.1em; /* Levemente maior */
+            color: var(--cor-texto-secundario-sistema);
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--cor-texto-principal-sistema);
+            font-size: 0.95em; /* Um pouco menor para labels */
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select,
+        textarea {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid var(--cor-borda-sistema);
+            border-radius: 8px; /* Bordas mais suaves */
+            font-size: 1em;
+            color: var(--cor-texto-principal-sistema);
+            background-color: var(--cor-fundo-card-sistema); /* Fundo branco para inputs */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="file"] {
+            padding: 10px; /* Ajuste para input file */
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="file"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--cor-primaria-acao); /* Borda com a cor primária ao focar */
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15); /* Sombra mais suave */
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            background-color: var(--cor-primaria-acao);
+            color: var(--cor-texto-botao);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px; /* Bordas mais suaves */
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            margin-right: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); /* Sombra mais pronunciada */
+        }
+
+        button:hover {
+            background-color: #004085; /* Um tom mais escuro de azul para hover */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--cor-secundaria-acao); /* Vermelho para o secundário */
+        }
+
+        .btn-secondary:hover {
+            background-color: #c0392b; /* Tom mais escuro de vermelho */
+        }
+
+        /* --- Estilo do Recibo (Baseado no NOVO Template da Imagem e Cores da Logo Flor de Liz) --- */
+        .recibo-template {
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--template-white);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: none;
+            box-sizing: border-box;
+            color: var(--template-dark-text);
+        }
+
+        /* Topo do recibo - Cores da Flor de Liz */
+        .recibo-top-banner {
+            background-color: var(--template-main-color); /* Vermelho da logo */
+            height: 140px; /* Aumentei a altura para mais destaque */
+            position: relative;
+            padding: 20px 25px; /* Adicionado padding lateral */
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .recibo-top-banner::after { /* Faixa amarela da logo */
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--template-light-accent); /* Amarelo da logo */
+            transform: skewY(-5deg);
+            transform-origin: 0% 0%;
+            z-index: 1;
+        }
+
+        .recibo-top-banner::before { /* Faixa branca (parte superior) */
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--template-white);
+            transform: skewY(-5deg);
+            transform-origin: 0% 0%;
+            z-index: 0;
+        }
+
+        .recibo-top-logo-section {
+            display: flex;
+            align-items: center;
+            color: var(--template-white); /* Texto branco no banner vermelho */
+            z-index: 2;
+            position: relative;
+        }
+
+        .recibo-top-logo {
+            width: 55px; /* Aumentei a largura da logo */
+            height: 55px; /* Aumentei a altura da logo */
+            filter: brightness(0) invert(1); /* Mantido para virar logo escura em branca no fundo vermelho */
+            margin-right: 12px; /* Mais espaço entre logo e texto */
+        }
+
+        .recibo-top-company-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.6em; /* Aumentei o nome da empresa */
+            line-height: 1.2;
+        }
+        .recibo-top-company-subtitle {
+            font-size: 0.75em; /* Ajustei o subtítulo */
+            opacity: 0.8;
+        }
+
+        .recibo-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.5em; /* Título do recibo maior */
+            color: var(--template-white);
+            text-align: right;
+            position: relative;
+            z-index: 2;
+        }
+        .recibo-title span.receipt-number-display {
+            display: block;
+            font-size: 0.6em;
+            font-weight: 400;
+            margin-top: 5px;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+        .recibo-title span.title-hash {
+            display: none;
+        }
+
+
+        /* Conteúdo principal */
+        .recibo-content-area {
+            padding: 30px 25px;
+            position: relative;
+            z-index: 1;
+            padding-bottom: 80px;
+        }
+
+        .recibo-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px; /* Mais espaçamento */
+            margin-bottom: 30px; /* Mais espaçamento */
+        }
+
+        .recibo-detail-block p {
+            margin: 0;
+            font-size: 0.85em; /* Ligeiramente maior */
+            color: var(--template-secondary-text); /* Cinza da logo */
+        }
+        .recibo-detail-block strong {
+            display: block;
+            font-size: 1.05em; /* Ligeiramente maior */
+            color: var(--template-dark-text); /* Preto da logo */
+            margin-top: 4px; /* Mais espaço */
+            margin-bottom: 6px; /* Mais espaço */
+        }
+
+        .recibo-details-from {
+            text-align: right;
+        }
+
+        /* Tabela de Itens Otimizada */
+        .recibo-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px; /* Mais espaçamento */
+        }
+
+        .recibo-items-table th,
+        .recibo-items-table td {
+            padding: 12px 15px; /* Mais padding */
+            text-align: left;
+            font-size: 0.9em; /* Ligeiramente maior */
+            border-bottom: 1px solid var(--template-border-color);
+        }
+
+        .recibo-items-table th {
+            background-color: var(--template-main-color); /* Vermelho da logo */
+            color: var(--template-white);
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase; /* Mais impacto */
+        }
+
+        .recibo-items-table tbody tr:nth-child(even) {
+            background-color: var(--template-table-stripe); /* Amarelo da logo com opacidade */
+        }
+
+        .recibo-items-table .text-right {
+            text-align: right;
+        }
+        /* Largura das colunas */
+        .recibo-items-table .col-item {
+            width: 75%;
+        }
+        .recibo-items-table .col-valor {
+            width: 25%;
+        }
+
+
+        /* Seção de Totais */
+        .recibo-totals-section {
+            margin-top: 30px; /* Mais espaçamento */
+            padding-left: 50%;
+            font-size: 1em;
+            color: var(--template-dark-text); /* Preto da logo */
+        }
+
+        .recibo-totals-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px; /* Mais espaçamento */
+        }
+        .recibo-totals-row span:first-child {
+            font-weight: 600;
+        }
+        .recibo-totals-row span:last-child {
+            font-weight: normal;
+        }
+
+        /* Valor por Extenso - diretamente abaixo do valor */
+        .recibo-valor-extenso-display {
+            font-size: 0.85em; /* Ajuste para o tamanho do texto */
+            font-style: italic;
+            text-align: right; /* Alinha com o total */
+            color: var(--template-secondary-text); /* Cinza da logo */
+            margin-top: 5px; /* Mais espaçamento */
+            margin-bottom: 15px; /* Espaçamento após o valor por extenso */
+        }
+
+
+        .recibo-totals-row.final-total {
+            font-weight: 700;
+            font-size: 1.2em; /* Total final maior */
+            padding-top: 10px; /* Mais padding */
+            border-top: 1px solid var(--template-border-color);
+            margin-top: 15px; /* Mais espaçamento */
+        }
+
+        /* Seção de Banco e Assinatura */
+        .recibo-bank-signature {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 40px; /* Mais espaçamento */
+            flex-wrap: wrap;
+        }
+
+        .recibo-bank-info {
+            flex: 1;
+            margin-right: 20px; /* Mais espaçamento */
+            min-width: 250px; /* Maior largura mínima */
+        }
+        .recibo-bank-info p {
+            margin: 0;
+            font-size: 0.85em; /* Ligeiramente maior */
+            color: var(--template-secondary-text); /* Cinza da logo */
+        }
+        .recibo-bank-info strong {
+            display: block;
+            font-size: 1.05em; /* Ligeiramente maior */
+            color: var(--template-dark-text); /* Preto da logo */
+            margin-top: 4px; /* Mais espaço */
+            margin-bottom: 6px; /* Mais espaço */
+        }
+        .recibo-bank-info .school-cnpj {
+            font-size: 0.8em; /* Ajustado */
+            color: var(--template-secondary-text); /* Cinza da logo */
+        }
+
+        .recibo-signature-area-template {
+            text-align: center;
+            flex: 1;
+            min-width: 200px; /* Maior largura mínima */
+            margin-top: 20px; /* Mais espaçamento */
+        }
+        .recibo-signature-image {
+            width: 150px; /* Assinatura um pouco maior */
+            height: auto;
+            margin-bottom: 5px; /* Mais espaçamento */
+        }
+        .recibo-signature-label {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9em; /* Ligeiramente maior */
+            color: var(--template-dark-text); /* Preto da logo */
+            border-top: 1px solid var(--template-border-color);
+            padding-top: 6px; /* Mais padding */
+            display: inline-block;
+        }
+        .recibo-thank-you {
+            font-size: 0.95em; /* Ligeiramente maior */
+            font-weight: 600;
+            color: var(--template-secondary-text); /* Cinza da logo */
+            margin-top: 12px; /* Mais espaçamento */
+        }
+
+        /* Rodapé amarelo (da logo) */
+        .recibo-bottom-banner {
+            background-color: var(--template-light-accent); /* Amarelo da logo */
+            height: 40px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            transform: skewY(5deg);
+            transform-origin: 100% 100%;
+            z-index: 0;
+        }
+
+        /* Rodapé de data e hora (discreto) */
+        .recibo-timestamp {
+            position: absolute;
+            bottom: 10px; /* Posição ajustada */
+            right: 25px; /* Alinhado à direita */
+            z-index: 10;
+            font-size: 0.7em; /* Ligeiramente maior */
+            color: #666; /* Cor mais suave */
+            text-align: right;
+            pointer-events: none;
+        }
+
+
+        /* Histórico (cores do sistema) */
+        .historico-section {
+            margin-top: 30px;
+        }
+
+        .historico-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .historico-list li {
+            background-color: var(--cor-fundo-card-sistema); /* Usar fundo do card para itens do histórico */
+            margin-bottom: 15px; /* Mais espaçamento */
+            padding: 20px 25px; /* Mais padding */
+            border-radius: 10px; /* Mais arredondado */
+            border: 1px solid var(--cor-borda-sistema);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px var(--cor-sombra-sistema); /* Sombra mais suave */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .historico-list li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--cor-sombra-hover-sistema);
+        }
+
+        .historico-list li span {
+            flex-basis: calc(50% - 15px); /* Ajuste de espaçamento */
+            margin-bottom: 8px; /* Mais espaçamento */
+            color: var(--cor-texto-principal-sistema);
+            font-size: 0.95em;
+        }
+        .historico-list li span strong {
+            color: var(--cor-primaria-acao); /* Destacar número do recibo */
+        }
+
+
+        .historico-list li .actions {
+            flex-basis: 100%;
+            text-align: right;
+            margin-top: 15px; /* Mais espaçamento */
+        }
+        @media (min-width: 600px) {
+            .historico-list li .actions {
+                flex-basis: auto;
+                margin-top: 0;
+            }
+        }
+
+        .historico-list li button {
+            padding: 8px 18px; /* Mais padding */
+            font-size: 0.9em;
+            margin-left: 10px; /* Mais espaçamento */
+            border-radius: 6px; /* Ajuste de borda */
+            box-shadow: none; /* Remover sombra dos botões internos */
+        }
+        .historico-list li button:hover {
+             transform: translateY(-1px); /* Menos destaque no hover para botões internos */
+        }
+        .historico-list li button.btn-secondary {
+            background-color: var(--cor-secundaria-acao);
+        }
+        .historico-list li button.btn-secondary:hover {
+            background-color: #c0392b;
+        }
+
+        .historico-total {
+            font-size: 1.4em; /* Maior */
+            font-weight: 700;
+            text-align: right;
+            margin-top: 30px; /* Mais espaçamento */
+            color: var(--cor-primaria-acao); /* Cor primária de ação */
+            padding-top: 20px; /* Mais padding */
+            border-top: 2px dashed var(--cor-borda-sistema); /* Linha mais grossa */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Flor de Liz</h1>
+            <p class="subtitle">ESCOLA DE EDUCAÇÃO BÁSICA</p>
+        </header>
+
+        <section class="card recibo-form">
+            <h3>Gerar Novo Recibo</h3>
+            <div class="form-group">
+                <label for="logoUpload">Upload da Logomarca (opcional):</label>
+                <input type="file" id="logoUpload" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label for="pagador">Nome do Pagador:</label>
+                <input type="text" id="pagador" required>
+            </div>
+            <div class="form-group">
+                <label for="descricao">Descrição do Serviço/Produto:</label>
+                <textarea id="descricao" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="valor">Valor (R$):</label>
+                <input type="number" id="valor" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="formaPagamento">Forma de Pagamento:</label>
+                <select id="formaPagamento" required>
+                    <option value="">Selecione a forma de pagamento</option>
+                    <option value="Pix">Pix</option>
+                    <option value="Débito">Débito</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                </select>
+            </div>
+            <button id="gerarRecibo">Gerar Recibo</button>
+        </section>
+
+        <section class="card recibo-preview" id="reciboPreview">
+            <div class="recibo-template" id="reciboContent">
+                <div class="recibo-top-banner">
+                    <div class="recibo-top-logo-section">
+                        <img id="logoRecibo" src="" alt="Logo" class="recibo-top-logo" style="display: none;">
+                        <div>
+                            <p class="recibo-top-company-name">FLOR DE LIZ</p>
+                            <p class="recibo-top-company-subtitle">ESCOLA DE EDUCAÇÃO BÁSICA</p>
+                        </div>
+                    </div>
+                    <p class="recibo-title">RECIBO <span class="receipt-number-display">#<span id="reciboNumero"></span></span></p>
+                </div>
+
+                <div class="recibo-content-area">
+                    <div class="recibo-details-grid">
+                        <div class="recibo-detail-block">
+                            <p>RECIBO PARA</p>
+                            <strong><span id="reciboPagador"></span></strong>
+                            <p>Maceió, AL</p>
+                        </div>
+                        <div class="recibo-detail-block recibo-details-from">
+                            <p>DETALHES DA ESCOLA</p>
+                            <strong>Flor de Liz</strong>
+                            <p>Escola de Educação Básica</p>
+                            <p>CNPJ 11.522.573.0001/00</p>
+                            <p>Rua Centro Esportivo Alagoano 36, Jacintinho</p>
+                            <p>CEP: 57041-350</p>
+                            <p>E-mail: Andreiacanabarro04@gmail.com</p>
+                            <p>Data: <span id="reciboData"></span></p>
+                            <p>Pagamento: <span id="reciboFormaPagamento"></span></p>
+                        </div>
+                    </div>
+
+                    <table class="recibo-items-table">
+                        <thead>
+                            <tr>
+                                <th class="col-item">DESCRIÇÃO</th> <th class="col-valor text-right">VALOR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span id="reciboDescricao"></span></td>
+                                <td class="text-right">R$ <span id="reciboValorNumerico">0,00</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="recibo-totals-section">
+                        <div class="recibo-totals-row final-total">
+                            <span>TOTAL</span>
+                            <span>R$ <span id="reciboTotalFinal">0,00</span></span>
+                        </div>
+                        <p class="recibo-valor-extenso-display">(<span id="reciboValorExtenso">zero reais</span>)</p>
+                    </div>
+
+                    <div class="recibo-bank-signature">
+                        <div class="recibo-bank-info">
+                            <p>DETALHES DE PAGAMENTO</p>
+                            <strong>Flor de Liz</strong>
+                            <p class="school-cnpj">CNPJ 11.522.573.0001/00</p>
+                            <p>Maceió, AL</p>
+                        </div>
+                        <div class="recibo-signature-area-template">
+                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Assinatura" class="recibo-signature-image">
+                            <p class="recibo-signature-label">Flor de Liz</p>
+                            <p class="recibo-thank-you">OBRIGADO!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="recibo-bottom-banner"></div>
+                <p class="recibo-timestamp" id="reciboTimestamp"></p>
+            </div>
+            <button id="baixarPdf" style="display: none;">Baixar Recibo PDF</button>
+            <button id="limparCampos" class="btn-secondary" style="display: none;">Limpar Campos</button>
+        </section>
+
+        <section class="card historico-section">
+            <h3>Histórico de Recibos</h3>
+            <ul id="historicoList" class="historico-list">
+                </ul>
+            <p class="historico-total">Valor Total dos Recibos: R$ <span id="totalRecibos">0,00</span></p>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // Funções para converter números em palavras (apenas para o Real)
+        function numeroParaExtenso(numero) {
+            const unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
+            const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+            const especiais = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
+            const centenas = ["", "cem", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
+
+            let [inteiroStr, decimalStr] = String(parseFloat(numero).toFixed(2)).split('.');
+            let inteiro = parseInt(inteiroStr, 10);
+            let decimal = parseInt(decimalStr, 10);
+
+            let extenso = "";
+
+            if (inteiro === 0 && decimal === 0) {
+                return "zero reais";
+            }
+
+            function centenasExtenso(num) {
+                if (num === 0) return "";
+                if (num < 10) return unidades[num];
+                if (num < 20) return especiais[num - 10];
+                if (num < 100) {
+                    let dezena = Math.floor(num / 10);
+                    let unidade = num % 10;
+                    return dezenas[dezena] + (unidade > 0 ? " e " + unidades[unidade] : "");
+                }
+                if (num < 1000) {
+                    let centena = Math.floor(num / 100);
+                    let resto = num % 100;
+                    if (centena === 1 && resto === 0) return "cem"; // Exceção para "cem"
+                    return centenas[centena] + (resto > 0 ? " e " + centenasExtenso(resto) : "");
+                }
+                return "";
+            }
+
+            if (inteiro > 0) {
+                let trilhoes = Math.floor(inteiro / 1000000000000);
+                inteiro %= 1000000000000;
+                let bilhoes = Math.floor(inteiro / 1000000000);
+                inteiro %= 1000000000;
+                let milhoes = Math.floor(inteiro / 1000000);
+                inteiro %= 1000000;
+                let milhares = Math.floor(inteiro / 1000);
+                inteiro %= 1000;
+
+                if (trilhoes > 0) {
+                    extenso += centenasExtenso(trilhoes) + (trilhoes === 1 ? " trilhão" : " trilhões");
+                    if (inteiro > 0 || bilhoes > 0 || milhoes > 0 || milhares > 0) extenso += " e ";
+                }
+                if (bilhoes > 0) {
+                    extenso += centenasExtenso(bilhoes) + (bilhoes === 1 ? " bilhão" : " bilhões");
+                    if (inteiro > 0 || milhoes > 0 || milhares > 0) extenso += " e ";
+                }
+                if (milhoes > 0) {
+                    extenso += centenasExtenso(milhoes) + (milhoes === 1 ? " milhão" : " milhões");
+                    if (inteiro > 0 || milhares > 0) extenso += " e ";
+                }
+                if (milhares > 0) {
+                    extenso += (milhares === 1 ? "mil" : centenasExtenso(milhares) + " mil");
+                    if (inteiro > 0) extenso += " e ";
+                }
+                if (inteiro > 0) {
+                    extenso += centenasExtenso(inteiro);
+                }
+
+                extenso += (extenso.trim() === "um" ? " real" : " reais");
+            } else {
+                extenso += "zero reais";
+            }
+
+            if (decimal > 0) {
+                const centavosExtenso = centenasExtenso(decimal);
+                if (extenso.includes("real") || extenso.includes("reais")) { // Verifica se já tem "reais" antes de adicionar "e"
+                    extenso += " e ";
+                }
+                extenso += centavosExtenso + (decimal === 1 ? " centavo" : " centavos");
+            }
+
+            return extenso.trim();
+        }
+
+        // Elementos do DOM
+        const logoUploadInput = document.getElementById('logoUpload');
+        const pagadorInput = document.getElementById('pagador');
+        const descricaoInput = document.getElementById('descricao');
+        const valorInput = document.getElementById('valor');
+        const formaPagamentoSelect = document.getElementById('formaPagamento');
+        const gerarReciboBtn = document.getElementById('gerarRecibo');
+        const reciboPreview = document.getElementById('reciboPreview');
+        const reciboContent = document.getElementById('reciboContent'); // O div que será capturado pelo html2canvas
+        const baixarPdfBtn = document.getElementById('baixarPdf');
+        const limparCamposBtn = document.getElementById('limparCampos');
+
+        // IDs para os elementos do template do recibo
+        const logoReciboImg = document.getElementById('logoRecibo'); 
+        const reciboPagadorSpan = document.getElementById('reciboPagador');
+        const reciboDataSpan = document.getElementById('reciboData');
+        const reciboNumeroSpan = document.getElementById('reciboNumero');
+        const reciboFormaPagamentoSpan = document.getElementById('reciboFormaPagamento');
+        const reciboDescricaoSpan = document.getElementById('reciboDescricao');
+        const reciboValorNumericoSpan = document.getElementById('reciboValorNumerico');
+        const reciboValorExtensoSpan = document.getElementById('reciboValorExtenso');
+        const reciboTotalFinalSpan = document.getElementById('reciboTotalFinal');
+        const reciboTimestampSpan = document.getElementById('reciboTimestamp'); // Span para data/hora no rodapé
+
+        const historicoList = document.getElementById('historicoList');
+        const totalRecibosSpan = document.getElementById('totalRecibos');
+
+        let recibos = []; // Array para armazenar os recibos
+        let editingReciboId = null; // Para controlar se estamos editando um recibo existente
+        let currentLogoDataUrl = localStorage.getItem('florDeLizLogo'); // Carrega a logo salva
+        let lastPagadorName = localStorage.getItem('lastFlorDeLizPagador'); // Carrega o último pagador salvo
+
+        // Funções de Utilidade
+        function formatarData(date) {
+            // Formato DD/MM/AAAA para exibição no recibo e numeração
+            const dia = String(date.getDate()).padStart(2, '0');
+            const mes = String(date.getMonth() + 1).padStart(2, '0'); // Mês é 0-indexed
+            const ano = date.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function formatarDataExtenso(date) {
+            const dia = date.getDate();
+            const mes = date.toLocaleString('pt-BR', { month: 'long' });
+            const ano = date.getFullYear();
+            return `${dia} de ${mes} de ${ano}`;
+        }
+
+        function formatarDataHoraCompleta(date) {
+            const options = {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false
+            };
+            return date.toLocaleString('pt-BR', options); // toLocaleString já formata data e hora juntas
+        }
+
+        // Função para carregar/salvar recibos do/no localStorage
+        function carregarRecibos() {
+            const dadosSalvos = localStorage.getItem('recibosFlorDeLis');
+            if (dadosSalvos) {
+                recibos = JSON.parse(dadosSalvos);
+                renderizarHistorico();
+            }
+        }
+
+        function salvarRecibos() {
+            localStorage.setItem('recibosFlorDeLis', JSON.stringify(recibos));
+        }
+
+        // Função para gerenciar a logo
+        function carregarLogo() {
+            if (currentLogoDataUrl) {
+                logoReciboImg.src = currentLogoDataUrl; // Define a Data URL como source da imagem
+                logoReciboImg.style.display = 'block';
+                // Para este template, a logo está em uma área vermelha escura, então "filter: brightness(0) invert(1)" é útil
+                // para transformar logos escuras em brancas para contraste. Se sua logo já for branca/clara, pode remover.
+                logoReciboImg.style.filter = 'brightness(0) invert(1)'; /* Inverte cores para fundo escuro */
+            } else {
+                logoReciboImg.style.display = 'none';
+                logoReciboImg.style.filter = 'none'; // Reseta o filtro se não tiver logo
+            }
+        }
+
+        logoUploadInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentLogoDataUrl = e.target.result; // Armazena a Data URL
+                    localStorage.setItem('florDeLizLogo', currentLogoDataUrl); // Salva a logo no localStorage
+                    carregarLogo(); // Atualiza a logo na pré-visualização
+                    alert('Logomarca carregada e salva com sucesso! Ela aparecerá nos novos recibos.');
+                };
+                reader.readAsDataURL(file); // Converte o arquivo em Data URL
+            }
+        });
+
+        // Salvar último nome de pagador ao gerar/atualizar recibo
+        pagadorInput.addEventListener('change', () => {
+            localStorage.setItem('lastFlorDeLizPagador', pagadorInput.value.trim());
+        });
+
+
+        // Função para gerar o próximo número de recibo
+        function gerarProximoNumeroRecibo() {
+            // Formato para comparação: DDMMAAAA
+            const hoje = formatarData(new Date()).replace(/\//g, '');
+            // Filtra os recibos do dia, pegando apenas os que começam com o padrão FLIS-DDMMAAAA
+            const recibosDoDia = recibos.filter(rec => rec.numero && rec.numero.startsWith(`FLIS-${hoje}`));
+
+            if (recibosDoDia.length === 0) {
+                return `FLIS-${hoje}-001`; // Adiciona prefixo FLIS para Flor de Liz
+            } else {
+                const numerosExistentes = recibosDoDia.map(rec => parseInt(rec.numero.split('-')[2], 10)); // Pega a parte numérica após a data
+                const ultimoNumero = Math.max(...numerosExistentes);
+                const novoNumero = ultimoNumero + 1;
+                return `FLIS-${hoje}-${String(novoNumero).padStart(3, '0')}`;
+            }
+        }
+
+        // Função para renderizar o histórico de recibos
+        function renderizarHistorico() {
+            historicoList.innerHTML = '';
+            let total = 0;
+
+            // Renderiza do mais novo para o mais antigo
+            // Criamos uma cópia do array e o invertemos para exibir os mais recentes primeiro
+            [...recibos].reverse().forEach((recibo) => {
+                total += parseFloat(recibo.valor);
+
+                const li = document.createElement('li');
+                li.setAttribute('data-id', recibo.id);
+                li.innerHTML = `
+                    <span><strong>Nº ${recibo.numero}</strong></span>
+                    <span>${recibo.dataDisplay}</span>
+                    <span>${recibo.pagador}</span>
+                    <span>R$ ${parseFloat(recibo.valor).toFixed(2).replace('.', ',')}</span>
+                    <div class="actions">
+                        <button onclick="editarRecibo('${recibo.id}')">Editar</button>
+                        <button class="btn-secondary" onclick="excluirRecibo('${recibo.id}')">Excluir</button>
+                        <button onclick="baixarReciboPdf('${recibo.id}')">Baixar PDF</button>
+                    </div>
+                `;
+                historicoList.appendChild(li);
+            });
+
+            totalRecibosSpan.textContent = total.toFixed(2).replace('.', ',');
+        }
+
+        // Função para preencher o formulário para edição
+        function editarRecibo(id) {
+            const reciboParaEditar = recibos.find(rec => rec.id === id);
+            if (reciboParaEditar) {
+                pagadorInput.value = reciboParaEditar.pagador;
+                descricaoInput.value = reciboParaEditar.descricao;
+                valorInput.value = reciboParaEditar.valor;
+                formaPagamentoSelect.value = reciboParaEditar.formaPagamento;
+
+                editingReciboId = id; // Define o ID do recibo que está sendo editado
+                gerarReciboBtn.textContent = 'Atualizar Recibo';
+                reciboPreview.style.display = 'none'; // Esconde a pré-visualização enquanto edita
+                baixarPdfBtn.style.display = 'none';
+                limparCamposBtn.style.display = 'none';
+                alert('Você está editando o recibo Nº ' + reciboParaEditar.numero + '. Após as alterações, clique em "Atualizar Recibo".');
+            }
+        }
+
+        // Função para excluir um recibo
+        function excluirRecibo(id) {
+            if (confirm('Tem certeza que deseja excluir este recibo do histórico? Esta ação não pode ser desfeita.')) {
+                recibos = recibos.filter(rec => rec.id !== id);
+                salvarRecibos();
+                renderizarHistorico();
+                // Se o recibo que está sendo visualizado for excluído, limpar a visualização
+                // Verifica se o ID do recibo atual mostrado no preview é o mesmo que está sendo excluído
+                if (reciboContent.style.display === 'block' && reciboContent.dataset.currentReciboId === id) {
+                     limparCampos();
+                }
+                alert('Recibo excluído com sucesso!');
+            }
+        }
+
+        // Função para limpar os campos do formulário e a pré-visualização
+        function limparCampos() {
+            pagadorInput.value = lastPagadorName || ''; // Preenche com o último nome salvo
+            descricaoInput.value = '';
+            valorInput.value = '';
+            formaPagamentoSelect.value = '';
+            reciboPreview.style.display = 'none';
+            baixarPdfBtn.style.display = 'none';
+            limparCamposBtn.style.display = 'none';
+            editingReciboId = null; // Reseta o modo de edição
+            gerarReciboBtn.textContent = 'Gerar Recibo';
+            // Garante que o template do recibo está escondido (pode ter sido mostrado para PDF)
+            reciboContent.style.display = 'none';
+            reciboContent.removeAttribute('data-current-recibo-id'); // Limpa o ID do recibo atualmente exibido
+        }
+
+        // Função principal para gerar ou atualizar o recibo
+        gerarReciboBtn.addEventListener('click', () => {
+            const pagador = pagadorInput.value.trim();
+            const descricao = descricaoInput.value.trim();
+            const valor = parseFloat(valorInput.value);
+            const formaPagamento = formaPagamentoSelect.value;
+
+            if (!pagador || !descricao || isNaN(valor) || valor <= 0 || !formaPagamento) {
+                alert('Por favor, preencha todos os campos corretamente (valor deve ser maior que zero e forma de pagamento selecionada).');
+                return;
+            }
+
+            const dataAtual = new Date();
+            const dataFormatada = formatarData(dataAtual); // Ex: 31/07/2025
+            const dataExtenso = formatarDataExtenso(dataAtual); // Ex: 31 de julho de 2025
+            const dataHoraCompleta = formatarDataHoraCompleta(dataAtual); // Ex: 31/07/2025 11:30:45
+            const valorExtenso = numeroParaExtenso(valor);
+
+            let numeroReciboCompleto; // FLIS-DDMMAAAA-NNN
+            let numeroReciboDisplay; // NNN (parte final do número)
+            let reciboId;
+            let currentRecibo;
+
+            if (editingReciboId) {
+                // Estamos editando um recibo existente
+                const index = recibos.findIndex(rec => rec.id === editingReciboId);
+                if (index !== -1) {
+                    currentRecibo = recibos[index];
+                    currentRecibo.pagador = pagador;
+                    currentRecibo.descricao = descricao;
+                    currentRecibo.valor = valor.toFixed(2); // Salva como string com 2 casas decimais
+                    currentRecibo.formaPagamento = formaPagamento;
+                    currentRecibo.valorExtenso = valorExtenso;
+                    // Não atualizamos dataDisplay, dataExtenso ou dataHoraCompleta para um recibo editado,
+                    // pois eles devem refletir a data de criação original.
+                    
+                    numeroReciboCompleto = currentRecibo.numero;
+                    numeroReciboDisplay = currentRecibo.numero.split('-')[2]; // Pega a parte numérica final
+                    reciboId = editingReciboId;
+                }
+            } else {
+                // Gerando um novo recibo
+                numeroReciboCompleto = gerarProximoNumeroRecibo(); // Ex: FLIS-31072025-001
+                numeroReciboDisplay = numeroReciboCompleto.split('-')[2]; // Pega a parte numérica final: 001
+                reciboId = `${numeroReciboCompleto}-${Date.now()}`; // ID único com timestamp para garantir unicidade
+                currentRecibo = {
+                    id: reciboId,
+                    numero: numeroReciboCompleto,
+                    data: dataFormatada, // Data para lógica interna e numeração sequencial
+                    dataDisplay: dataFormatada, // Data para exibição no histórico
+                    dataExtenso: dataExtenso,
+                    dataHoraCompleta: dataHoraCompleta, // Timestamp de criação
+                    pagador: pagador,
+                    descricao: descricao,
+                    valor: valor.toFixed(2), // Salva como string com 2 casas decimais
+                    valorExtenso: valorExtenso,
+                    formaPagamento: formaPagamento
+                };
+                recibos.push(currentRecibo);
+            }
+
+            // Salva o último nome de pagador digitado
+            localStorage.setItem('lastFlorDeLizPagador', pagador);
+
+            // Preencher os campos da pré-visualização do recibo com o NOVO TEMPLATE
+            carregarLogo(); // Garante que a logo está no preview
+
+            reciboPagadorSpan.textContent = pagador;
+            reciboDataSpan.textContent = currentRecibo.dataDisplay; // Usa a data original para exibição
+            reciboNumeroSpan.textContent = numeroReciboDisplay; // Exibe apenas a parte numérica final
+            reciboFormaPagamentoSpan.textContent = formaPagamento;
+            reciboDescricaoSpan.textContent = descricao; // Descrição na tabela
+            reciboValorNumericoSpan.textContent = valor.toFixed(2).replace('.', ','); // Valor na coluna "Total"
+            reciboValorExtensoSpan.textContent = valorExtenso; // Valor por extenso
+            reciboTotalFinalSpan.textContent = valor.toFixed(2).replace('.', ','); // Total Final
+            reciboTimestampSpan.textContent = `Gerado em: ${currentRecibo.dataHoraCompleta}`; // Atualiza o timestamp
+
+            reciboContent.setAttribute('data-current-recibo-id', reciboId); // Armazena o ID do recibo atualmente exibido
+            reciboPreview.style.display = 'block'; // Mostra a pré-visualização
+            reciboContent.style.display = 'block'; // Garante que o template está visível
+            baixarPdfBtn.style.display = 'inline-block';
+            limparCamposBtn.style.display = 'inline-block';
+
+            salvarRecibos();
+            renderizarHistorico();
+            
+            // NÃO limpa os campos aqui para que o usuário veja o recibo que acabou de gerar/atualizar
+            // Apenas reseta o modo de edição
+            editingReciboId = null;
+            gerarReciboBtn.textContent = 'Gerar Recibo';
+
+            alert('Recibo ' + (editingReciboId ? 'atualizado' : 'gerado') + ' com sucesso! Você pode baixá-lo ou gerar um novo.');
+        });
+
+        // Função para baixar o recibo em PDF
+        async function baixarReciboPdf(id = null) {
+            let reciboData = {};
+            let isDownloadingFromHistory = false; // Flag para saber se o download é do histórico
+
+            // Salva o estado original dos elementos do recibo para restaurar depois
+            const originalReciboDisplay = reciboContent.style.display;
+            const originalReciboDatasetId = reciboContent.dataset.currentReciboId || null;
+
+            // Salva o estado atual dos spans do recibo
+            const originalSpans = {
+                pagador: reciboPagadorSpan.textContent,
+                data: reciboDataSpan.textContent,
+                numero: reciboNumeroSpan.textContent,
+                formaPagamento: reciboFormaPagamentoSpan.textContent,
+                descricao: reciboDescricaoSpan.textContent,
+                valorNumerico: reciboValorNumericoSpan.textContent,
+                valorExtenso: reciboValorExtensoSpan.textContent,
+                totalFinal: reciboTotalFinalSpan.textContent,
+                timestamp: reciboTimestampSpan.textContent,
+                logoSrc: logoReciboImg.src,
+                logoDisplay: logoReciboImg.style.display,
+                logoFilter: logoReciboImg.style.filter
+            };
+
+
+            // Se for do histórico, preenche o template temporariamente
+            if (id) {
+                isDownloadingFromHistory = true;
+                const reciboParaDownload = recibos.find(rec => rec.id === id);
+                if (!reciboParaDownload) {
+                    alert('Recibo não encontrado para download.');
+                    return;
+                }
+                reciboData = reciboParaDownload;
+
+                // Preenche o template com os dados do recibo do histórico para captura do PDF
+                logoReciboImg.src = currentLogoDataUrl || ''; // Usa a logo salva para o PDF do histórico
+                logoReciboImg.style.display = currentLogoDataUrl ? 'block' : 'none';
+                logoReciboImg.style.filter = currentLogoDataUrl ? 'brightness(0) invert(1)' : 'none'; // Aplica o filtro da logo no histórico
+                reciboPagadorSpan.textContent = reciboData.pagador;
+                reciboDataSpan.textContent = reciboData.dataDisplay;
+                reciboNumeroSpan.textContent = reciboData.numero.split('-')[2];
+                reciboFormaPagamentoSpan.textContent = reciboData.formaPagamento;
+                reciboDescricaoSpan.textContent = reciboData.descricao;
+                reciboValorNumericoSpan.textContent = parseFloat(reciboData.valor).toFixed(2).replace('.', ',');
+                reciboValorExtensoSpan.textContent = reciboData.valorExtenso;
+                reciboTotalFinalSpan.textContent = parseFloat(reciboData.valor).toFixed(2).replace('.', ',');
+                reciboTimestampSpan.textContent = `Gerado em: ${reciboData.dataHoraCompleta}`;
+                reciboContent.setAttribute('data-current-recibo-id', id); // Temporariamente seta o ID para o do histórico
+            } else {
+                // Se não for do histórico, os dados já estão no template visível
+                // Pega os dados direto do template para o nome do arquivo, etc.
+                reciboData = {
+                    numero: `FLIS-${formatarData(new Date()).replace(/\//g, '')}-${reciboNumeroSpan.textContent}`, // Recria o número completo
+                    dataDisplay: reciboDataSpan.textContent,
+                    pagador: reciboPagadorSpan.textContent,
+                    valor: parseFloat(reciboValorNumericoSpan.textContent.replace(',', '.')).toFixed(2),
+                    valorExtenso: reciboValorExtensoSpan.textContent,
+                    descricao: reciboDescricaoSpan.textContent,
+                    formaPagamento: reciboFormaPagamentoSpan.textContent,
+                    dataHoraCompleta: reciboTimestampSpan.textContent.replace('Gerado em: ', '')
+                };
+            }
+
+            // Garante que o recibo está visível para html2canvas, mas fora da tela
+            reciboContent.style.display = 'block';
+            reciboContent.style.position = 'absolute';
+            reciboContent.style.left = '-9999px';
+            reciboContent.style.top = '-9999px';
+            reciboContent.style.zIndex = '-1';
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'pt', 'a4');
+
+            const element = reciboContent;
+
+            try {
+                const canvas = await html2canvas(element, {
+                    scale: 3, // Aumenta a resolução da imagem para melhor qualidade
+                    logging: false,
+                    useCORS: true
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+
+                const imgWidthCanvas = canvas.width;
+                const imgHeightCanvas = canvas.height;
+
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                const pdfHeight = doc.internal.pageSize.getHeight();
+
+                const ratio = pdfWidth / imgWidthCanvas;
+                let finalImgWidth = pdfWidth;
+                let finalImgHeight = imgHeightCanvas * ratio;
+
+                if (finalImgHeight > pdfHeight) {
+                    const newRatio = pdfHeight / imgHeightCanvas;
+                    finalImgWidth = imgWidthCanvas * newRatio;
+                    finalImgHeight = pdfHeight;
+                }
+
+                const marginX = (pdfWidth - finalImgWidth) / 2;
+                const marginY = (pdfHeight - finalImgHeight) / 2;
+
+                doc.addImage(imgData, 'PNG', marginX, marginY, finalImgWidth, finalImgHeight);
+
+                const nomeArquivo = `recibo_${reciboData.numero}.pdf`;
+                doc.save(nomeArquivo);
+            } catch (error) {
+                console.error("Erro ao gerar PDF:", error);
+                alert("Ocorreu um erro ao gerar o PDF. Por favor, tente novamente.");
+            } finally {
+                // Restaura o estado original dos elementos do recibo
+                reciboContent.style.display = originalReciboDisplay;
+                reciboContent.style.position = ''; // Remove o estilo inline
+                reciboContent.style.left = '';     // Remove o estilo inline
+                reciboContent.style.top = '';      // Remove o estilo inline
+                reciboContent.style.zIndex = '';   // Remove o estilo inline
+
+                // Restaura os dados dos spans se o download foi do histórico
+                if (isDownloadingFromHistory) {
+                    reciboPagadorSpan.textContent = originalSpans.pagador;
+                    reciboDataSpan.textContent = originalSpans.data;
+                    reciboNumeroSpan.textContent = originalSpans.numero;
+                    reciboFormaPagamentoSpan.textContent = originalSpans.formaPagamento;
+                    reciboDescricaoSpan.textContent = originalSpans.descricao;
+                    reciboValorNumericoSpan.textContent = originalSpans.valorNumerico;
+                    reciboValorExtensoSpan.textContent = originalSpans.valorExtenso;
+                    reciboTotalFinalSpan.textContent = originalSpans.totalFinal;
+                    reciboTimestampSpan.textContent = originalSpans.timestamp;
+                    logoReciboImg.src = originalSpans.logoSrc; // Restaura a logo original
+                    logoReciboImg.style.display = originalSpans.logoDisplay;
+                    logoReciboImg.style.filter = originalSpans.logoFilter; // Restaura o filtro da logo original
+                    // Restaura o dataset ID para o que estava antes, caso estivesse exibindo outro recibo
+                    if (originalReciboDatasetId) {
+                         reciboContent.setAttribute('data-current-recibo-id', originalReciboDatasetId);
+                    } else {
+                         reciboContent.removeAttribute('data-current-recibo-id');
+                    }
+                }
+            }
+
+            // Limpa os campos do formulário principal apenas se o download não veio do histórico E não estamos editando
+            // e se o recibo visualizado era o que foi gerado/atualizado, para evitar limpar ao baixar algo do histórico
+            if (!id && editingReciboId === null) {
+                limparCampos();
+            }
+        }
+
+        // NOVO: Adiciona o event listener para o botão de baixar PDF
+        baixarPdfBtn.addEventListener('click', () => {
+            // Quando o botão de "Baixar Recibo PDF" da pré-visualização é clicado,
+            // chamamos a função sem ID, indicando que deve capturar o conteúdo atual.
+            baixarReciboPdf(null); 
+        });
+
+        // Event listener para o botão de limpar campos
+        limparCamposBtn.addEventListener('click', limparCampos);
+
+        // Carregar recibos e logo ao iniciar a página
+        carregarRecibos();
+        carregarLogo(); // Chama a função para carregar a logo salva ao iniciar
+        // Preencher o campo do pagador com o último nome salvo ao carregar a página
+        if (lastPagadorName) {
+            pagadorInput.value = lastPagadorName;
+        }
+    </script>
+</body>
+</html>
