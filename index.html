@@ -1,21 +1,22 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Recibos - Flor de Liz</title>
+    <title>Gerador de Recibos - Flor de Lis</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Variáveis CSS para as cores da logo Flor de Liz (aplicadas ao recibo) */
+        /* Variáveis CSS para as cores da logo Flor de Lis (aplicadas ao recibo) */
         :root {
-            /* Cores extraídas da logomarca "Flor de Liz" */
+            /* Cores extraídas da logomarca "Flor de Lis" */
             --logo-vermelho: #E44D26; /* Vermelho vibrante */
             --logo-amarelo: #F7DA21; /* Amarelo vibrante */
             --logo-azul: #0000FF;    /* Azul no centro da flor */
             --logo-preto: #000000;   /* Cor do texto "Flor de Lis" na logo */
             --logo-cinza: #666666;   /* Cor do subtítulo "Escola de Educação Básica" */
 
-            /* Cores do Template do Recibo - AGORA BASEADAS NA LOGO DA FLOR DE LIZ */
+            /* Cores do Template do Recibo - AGORA BASEADAS NA LOGO DA Flor de Lis */
             --template-main-color: var(--logo-vermelho); /* Cor principal forte */
             --template-light-accent: var(--logo-amarelo); /* Cor de destaque/faixas claras */
             --template-dark-text: var(--logo-preto);      /* Texto principal escuro */
@@ -33,7 +34,7 @@
             --cor-sombra-sistema: rgba(0, 0, 0, 0.06);
             --cor-sombra-hover-sistema: rgba(0, 0, 0, 0.12);
 
-            /* Cores de Ação (botões, destaques) - Usando as cores da logo Flor de Liz para acentuar */
+            /* Cores de Ação (botões, destaques) - Usando as cores da logo Flor de Lis para acentuar */
             --cor-primaria-acao: var(--logo-azul); /* Azul para botões principais */
             --cor-secundaria-acao: var(--logo-vermelho); /* Vermelho para botões secundários/perigo */
             --cor-texto-botao: #FFFFFF;
@@ -197,7 +198,7 @@
             background-color: #c0392b; /* Tom mais escuro de vermelho */
         }
 
-        /* --- Estilo do Recibo (Baseado no NOVO Template da Imagem e Cores da Logo Flor de Liz) --- */
+        /* --- Estilo do Recibo (Baseado no NOVO Template da Imagem e Cores da Logo Flor de Lis) --- */
         .recibo-template {
             font-family: 'Poppins', sans-serif;
             width: 100%;
@@ -212,7 +213,7 @@
             color: var(--template-dark-text);
         }
 
-        /* Topo do recibo - Cores da Flor de Liz */
+        /* Topo do recibo - Cores da Flor de Lis */
         .recibo-top-banner {
             background-color: var(--template-main-color); /* Vermelho da logo */
             height: 140px; /* Aumentei a altura para mais destaque */
@@ -575,7 +576,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>Flor de Liz</h1>
+            <h1>Flor de Lis</h1>
             <p class="subtitle">ESCOLA DE EDUCAÇÃO BÁSICA</p>
         </header>
 
@@ -615,7 +616,7 @@
                     <div class="recibo-top-logo-section">
                         <img id="logoRecibo" src="" alt="Logo" class="recibo-top-logo" style="display: none;">
                         <div>
-                            <p class="recibo-top-company-name">FLOR DE LIZ</p>
+                            <p class="recibo-top-company-name">Flor de Lis</p>
                             <p class="recibo-top-company-subtitle">ESCOLA DE EDUCAÇÃO BÁSICA</p>
                         </div>
                     </div>
@@ -631,7 +632,7 @@
                         </div>
                         <div class="recibo-detail-block recibo-details-from">
                             <p>DETALHES DA ESCOLA</p>
-                            <strong>Flor de Liz</strong>
+                            <strong>Flor de Lis</strong>
                             <p>Escola de Educação Básica</p>
                             <p>CNPJ 11.522.573.0001/00</p>
                             <p>Rua Centro Esportivo Alagoano 36, Jacintinho</p>
@@ -667,13 +668,13 @@
                     <div class="recibo-bank-signature">
                         <div class="recibo-bank-info">
                             <p>DETALHES DE PAGAMENTO</p>
-                            <strong>Flor de Liz</strong>
+                            <strong>Flor de Lis</strong>
                             <p class="school-cnpj">CNPJ 11.522.573.0001/00</p>
                             <p>Maceió, AL</p>
                         </div>
                         <div class="recibo-signature-area-template">
                             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Assinatura" class="recibo-signature-image">
-                            <p class="recibo-signature-label">Flor de Liz</p>
+                            <p class="recibo-signature-label">Flor de Lis</p>
                             <p class="recibo-thank-you">OBRIGADO!</p>
                         </div>
                     </div>
@@ -889,7 +890,7 @@
             const recibosDoDia = recibos.filter(rec => rec.numero && rec.numero.startsWith(`FLIS-${hoje}`));
 
             if (recibosDoDia.length === 0) {
-                return `FLIS-${hoje}-001`; // Adiciona prefixo FLIS para Flor de Liz
+                return `FLIS-${hoje}-001`; // Adiciona prefixo FLIS para Flor de Lis
             } else {
                 const numerosExistentes = recibosDoDia.map(rec => parseInt(rec.numero.split('-')[2], 10)); // Pega a parte numérica após a data
                 const ultimoNumero = Math.max(...numerosExistentes);
